@@ -1,0 +1,23 @@
+import { vevet } from '@anton.bobrov/vevet-init';
+import { WebglManager } from './webgl/Manager';
+import { PlaneElement } from './PlaneElement';
+
+const managerContainer = document.getElementById('scene') as HTMLElement;
+
+const manager = new WebglManager(managerContainer, {
+  rendererProps: {
+    dpr: vevet.viewport.lowerDesktopDpr,
+    antialias: false,
+  },
+});
+
+manager.play();
+
+// eslint-disable-next-line no-new
+new PlaneElement({
+  manager,
+  settings: {
+    noiseOctaves: 8,
+    noiseScale: 5,
+  },
+});
