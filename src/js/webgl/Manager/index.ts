@@ -4,11 +4,12 @@ import {
   Callbacks,
   IOnResize,
   onResize,
+  vevet,
 } from '@anton.bobrov/vevet-init';
 import { DeepRequired } from 'ts-essentials';
-import { WebglCamera } from '../Camera';
 import { WebglRenderer } from '../Renderer';
 import { IWebglManagerCallbacksTypes, IWebglManagerProps } from './types';
+import { WebglCamera } from '../Camera';
 
 export class WebglManager<TCamera extends Camera | undefined = undefined> {
   private _props: DeepRequired<IWebglManagerProps>;
@@ -16,6 +17,8 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
   get props() {
     return this._props;
   }
+
+  // dom
 
   private _container: HTMLElement;
 
@@ -25,11 +28,19 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
 
   private _canvas: HTMLCanvasElement;
 
+  get canvas() {
+    return this._canvas;
+  }
+
+  // renderer
+
   private _rendererInstance: WebglRenderer;
 
   get renderer() {
     return this._rendererInstance.renderer;
   }
+
+  // camera
 
   private _cameraInstance?: WebglCamera;
 
@@ -43,11 +54,19 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
     return this._camera;
   }
 
+  // scene
+
   private _scene: Scene;
 
   get scene() {
     return this._scene;
   }
+
+  set scene(scene: Scene) {
+    this._scene = scene;
+  }
+
+  // callbacks
 
   private _resizeCallback?: IOnResize;
 
@@ -56,6 +75,8 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
   get callbacks() {
     return this._callbacks;
   }
+
+  // animation frame
 
   private _animationFrame: AnimationFrame;
 
@@ -66,6 +87,8 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
   get easeMultiplier() {
     return this.animationFrame.easeMultiplier;
   }
+
+  // module
 
   constructor(
     containerSelector: HTMLElement | string,
@@ -96,8 +119,12 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
         far: 10000,
       },
       rendererProps: {} as any,
+      fps: 'auto',
     };
+
     this._props = {
+      ...defaultProps,
+      ...initialProps,
       cameraProps: { ...defaultProps.cameraProps, ...initialProps.cameraProps },
       rendererProps: {
         ...defaultProps.rendererProps,
@@ -136,6 +163,7 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
       element: container,
       hasBothEvents: true,
       onResize: () => this.resize(),
+      viewportTarget: vevet.isMobile ? 'width' : 'any',
     });
 
     // create callbacks
@@ -145,7 +173,7 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
     this.resize();
 
     // create an animation frame
-    this._animationFrame = new AnimationFrame();
+    this._animationFrame = new AnimationFrame({ fps: this.props.fps });
     this._animationFrame.addCallback('frame', () => this.render());
   }
 
@@ -180,10 +208,15 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
     return this._rendererInstance.dpr;
   }
 
+  public setDpr(value: number) {
+    this._rendererInstance.setDpr(value, false);
+    this.resize();
+  }
+
   public render() {
     this.callbacks.tbt('render', undefined);
 
-    if (this.width > 0 && this.height > 0) {
+    if (this.width > 0 && this.height > 0 && this.scene && this.camera) {
       this.renderer.render(this.scene, this.camera);
     }
 

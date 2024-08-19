@@ -8,6 +8,7 @@ export interface IWebglManagerProps {
     far?: number;
   };
   rendererProps?: IWebglRendererProps;
+  fps?: 'auto' | number;
 }
 
 export interface IWebglManagerCallbacksTypes {

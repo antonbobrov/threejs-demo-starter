@@ -34,6 +34,8 @@ export class WebglCamera {
       this.near,
       this.far,
     );
+
+    this._camera.position.set(0, 0, this.perspective);
   }
 
   get aspectRatio() {

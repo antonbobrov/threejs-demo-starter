@@ -17,8 +17,10 @@ export class WebglRenderer {
     return this._canvas;
   }
 
+  private _dpr: number;
+
   get dpr() {
-    return this._props.dpr ?? vevet.viewport.dpr;
+    return this._dpr;
   }
 
   get width() {
@@ -34,6 +36,8 @@ export class WebglRenderer {
     private _canvas: HTMLCanvasElement,
     private _props: IWebglRendererProps,
   ) {
+    this._dpr = this._props.dpr ?? vevet.viewport.dpr;
+
     this._renderer = new WebGLRenderer({
       ..._props,
       canvas: _canvas,
@@ -48,6 +52,14 @@ export class WebglRenderer {
 
     this._renderer.setSize(this.width, this.height);
     this._renderer.setPixelRatio(this.dpr);
+  }
+
+  public setDpr(value: number, hasResize = true) {
+    this._dpr = value;
+
+    if (hasResize) {
+      this.resize();
+    }
   }
 
   public destroy() {
