@@ -22,7 +22,7 @@ export class WebglCamera {
   }
 
   constructor(
-    private _container: Element,
+    private _container: HTMLElement,
     private _fov: number | undefined,
     private _perspective: number | (() => number),
     private _near: number,
@@ -43,11 +43,11 @@ export class WebglCamera {
   }
 
   get width() {
-    return this._container.clientWidth;
+    return this._container.offsetWidth;
   }
 
   get height() {
-    return this._container.clientHeight;
+    return this._container.offsetHeight;
   }
 
   get fov() {

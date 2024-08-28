@@ -47,8 +47,8 @@ export class WebglRenderer {
   }
 
   public resize() {
-    this._width = this._container.clientWidth;
-    this._height = this._container.clientHeight;
+    this._width = this._container.offsetWidth;
+    this._height = this._container.offsetHeight;
 
     this._renderer.setSize(this.width, this.height);
     this._renderer.setPixelRatio(this.dpr);
