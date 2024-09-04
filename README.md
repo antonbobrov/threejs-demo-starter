@@ -3,8 +3,7 @@
 ## Demo: https://antonbobrov.github.io/threejs-demo-starter/
 
 ## Dev config
-node v20.2.0 \
-npm v9.6.6
+node v20.17.0
 
 ## Build Setup
 
