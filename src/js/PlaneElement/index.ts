@@ -1,9 +1,9 @@
 import { Mesh, PlaneGeometry, ShaderMaterial } from 'three';
-import { NCallbacks } from '@anton.bobrov/vevet-init';
 import {
   TCreateDatGuiSettingsReturns,
   createDatGuiSettings,
 } from '@anton.bobrov/react-dat-gui';
+import { NCallbacks } from 'vevet';
 import { TProps, TSettings } from './types';
 
 import vertexShader from './shaders/vertex.glsl';
@@ -97,10 +97,10 @@ export class PlaneElement {
 
   /** Render the scene */
   private _render() {
-    const { easeMultiplier } = this.props.manager;
+    const { fpsMultiplier } = this.props.manager;
     const { uniforms } = this._material;
 
-    uniforms.u_time.value += 1 * easeMultiplier;
+    uniforms.u_time.value += 1 * fpsMultiplier;
   }
 
   /** Destroy the scene */

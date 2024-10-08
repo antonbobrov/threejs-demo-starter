@@ -1,11 +1,5 @@
 import { Scene, Camera } from 'three';
-import {
-  AnimationFrame,
-  Callbacks,
-  IOnResize,
-  onResize,
-  vevet,
-} from '@anton.bobrov/vevet-init';
+import { AnimationFrame, Callbacks, IOnResize, onResize, vevet } from 'vevet';
 import { DeepRequired } from 'ts-essentials';
 import { WebglRenderer } from '../Renderer';
 import { IWebglManagerCallbacksTypes, IWebglManagerProps } from './types';
@@ -84,8 +78,8 @@ export class WebglManager<TCamera extends Camera | undefined = undefined> {
     return this._animationFrame;
   }
 
-  get easeMultiplier() {
-    return this.animationFrame.easeMultiplier;
+  get fpsMultiplier() {
+    return this.animationFrame.fpsMultiplier;
   }
 
   // module

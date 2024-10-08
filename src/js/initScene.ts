@@ -1,4 +1,4 @@
-import { vevet } from '@anton.bobrov/vevet-init';
+import { vevet } from 'vevet';
 import { WebglManager } from './webgl/Manager';
 import { PlaneElement } from './PlaneElement';
 
@@ -6,7 +6,7 @@ const managerContainer = document.getElementById('scene') as HTMLElement;
 
 const manager = new WebglManager(managerContainer, {
   rendererProps: {
-    dpr: vevet.viewport.lowerDesktopDpr,
+    dpr: vevet.viewport.lowerDpr,
     antialias: false,
   },
 });

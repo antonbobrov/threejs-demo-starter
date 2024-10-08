@@ -1,5 +1,5 @@
 import { WebGLRenderer } from 'three';
-import { vevet } from '@anton.bobrov/vevet-init';
+import { vevet } from 'vevet';
 import { IWebglRendererProps } from './types';
 
 export class WebglRenderer {

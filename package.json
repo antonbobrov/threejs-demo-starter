@@ -18,7 +18,7 @@
     "> 0.01%"
   ],
   "devDependencies": {
-    "@anton.bobrov/eslint-config": "2.0.2",
+    "@anton.bobrov/eslint-config": "2.0.3",
     "@types/three": "^0.168.0",
     "autoprefixer": "^10.4.15",
     "clean-webpack-plugin": "^4.0.0",
@@ -46,10 +46,10 @@
     "webpack-merge": "^6.0.1"
   },
   "dependencies": {
-    "@anton.bobrov/react-dat-gui": "^3.1.7",
-    "@anton.bobrov/vevet-init": "3.17.0",
+    "@anton.bobrov/react-dat-gui": "^3.1.11",
     "normalize.css": "^8.0.1",
     "three": "^0.168.0",
-    "ts-essentials": "^10.0.2"
+    "ts-essentials": "^10.0.2",
+    "vevet": "^4.0.1"
   }
 }
