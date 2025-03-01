@@ -3,19 +3,24 @@ import {
   TCreateDatGuiSettingsReturns,
   createDatGuiSettings,
 } from '@anton.bobrov/react-dat-gui';
-import { NCallbacks } from 'vevet';
 import { TProps, TSettings } from './types';
 
 import vertexShader from './shaders/vertex.glsl';
 import fragmentShader from './shaders/fragment.glsl';
-import simplexNoise from '../webgl/shaders/simplexNoise.glsl';
+import simplexNoise from '../shaders/simplexNoise.glsl';
 
-export class PlaneElement {
+export class Plane {
   private get props() {
     return this._props;
   }
 
-  private _startSize: { width: number; height: number };
+  private get webgl() {
+    return this._props.webgl;
+  }
+
+  private _initWidth: number;
+
+  private _initHeight: number;
 
   private _mesh: Mesh;
 
@@ -25,25 +30,30 @@ export class PlaneElement {
 
   private _gui: TCreateDatGuiSettingsReturns<TSettings>;
 
-  private _callbacks: NCallbacks.IAddedCallback[] = [];
+  private _destructors: (() => void)[] = [];
 
   constructor(private _props: TProps) {
-    const { manager, settings } = _props;
-    const { width: startWidth, height: startHeight } = manager;
+    const { webgl, settings } = _props;
 
-    // save initial sizes
-    this._startSize = { width: startWidth, height: startHeight };
+    // Save initial sizes
+    this._initWidth = webgl.width;
+    this._initHeight = webgl.height;
 
-    // create geometry
-    this._geometry = new PlaneGeometry(startWidth, startHeight, 20, 20);
+    // Create geometry
+    this._geometry = new PlaneGeometry(
+      this._initWidth,
+      this._initHeight,
+      20,
+      20,
+    );
 
-    // create shader material
+    // Create shader material
     this._material = new ShaderMaterial({
       vertexShader,
       fragmentShader: simplexNoise + fragmentShader,
       uniforms: {
         u_time: { value: 0 },
-        u_aspect: { value: startWidth / startHeight },
+        u_aspect: { value: this._initWidth / this._initHeight },
         u_noiseScale: { value: settings.noiseScale },
       },
       defines: {
@@ -53,7 +63,7 @@ export class PlaneElement {
 
     // create mesh
     this._mesh = new Mesh(this._geometry, this._material);
-    manager.scene.add(this._mesh);
+    webgl.scene.add(this._mesh);
 
     // create gui
     this._gui = createDatGuiSettings({
@@ -72,21 +82,20 @@ export class PlaneElement {
       },
     });
 
-    // resize
-    this._callbacks.push(manager.callbacks.add('resize', () => this._resize()));
+    // Resize
+    this._destructors.push(webgl.callbacks.on('resize', () => this._resize()));
 
-    // render
-    this._callbacks.push(manager.callbacks.add('render', () => this._render()));
+    // Render
+    this._destructors.push(webgl.callbacks.on('render', () => this._render()));
   }
 
   /** Resize the scene */
   private _resize() {
-    const { _startSize: startSize, props } = this;
-    const { width, height } = props.manager;
+    const { width, height } = this.webgl;
 
     // calculate mesh scale
-    const widthScale = width / startSize.width;
-    const heightScale = height / startSize.height;
+    const widthScale = width / this._initWidth;
+    const heightScale = height / this._initHeight;
 
     // set mesh scale
     this._mesh.scale.set(widthScale, heightScale, 1);
@@ -97,20 +106,20 @@ export class PlaneElement {
 
   /** Render the scene */
   private _render() {
-    const { fpsMultiplier } = this.props.manager;
+    const { webgl } = this.props;
     const { uniforms } = this._material;
 
-    uniforms.u_time.value += 1 * fpsMultiplier;
+    uniforms.u_time.value += 1 * webgl.raf.fpsFactor;
   }
 
   /** Destroy the scene */
   public destroy() {
-    this.props.manager.scene.remove(this._mesh);
+    this.webgl.scene.remove(this._mesh);
     this._material.dispose();
     this._geometry.dispose();
 
     this._gui.destroy();
 
-    this._callbacks.forEach((event) => event.remove());
+    this._destructors.forEach((destruct) => destruct());
   }
 }

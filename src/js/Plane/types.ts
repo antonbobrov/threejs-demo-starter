@@ -1,4 +1,4 @@
-import { WebglManager } from '../webgl/Manager';
+import { Webgl } from '../webgl';
 
 export type TSettings = {
   noiseOctaves: number;
@@ -6,6 +6,6 @@ export type TSettings = {
 };
 
 export type TProps = {
-  manager: WebglManager;
+  webgl: Webgl;
   settings: TSettings;
 };
