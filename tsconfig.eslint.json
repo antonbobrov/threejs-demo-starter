@@ -6,6 +6,7 @@
     "**/*.mjs",
     "**/*.tsx",
     "**/*.jsx",
-    "./.eslintrc.js"
+    "./eslint.config.mjs",
+    "./vite.config.mjs"
   ]
 }

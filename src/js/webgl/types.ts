@@ -5,8 +5,10 @@ export interface IWebglCallbacksMap {
   render: undefined;
 }
 
-export interface IWebglProps
-  extends Omit<WebGLRendererParameters, 'context' | 'canvas'> {
+export interface IWebglProps extends Omit<
+  WebGLRendererParameters,
+  'context' | 'canvas'
+> {
   fov?: number;
   perspective?: number;
   near?: number;

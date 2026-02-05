@@ -4,7 +4,7 @@
 
 ## Dev config
 
-node v20.17.0
+node v24.13.0
 
 ## Build Setup
 

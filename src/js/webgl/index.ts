@@ -1,5 +1,8 @@
-import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
-import { Callbacks, IOnResize, onResize, Raf, vevet } from 'vevet';
+import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { Callbacks, IOnResize, onResize, vevet } from 'vevet';
+
 import { IWebglCallbacksMap, IWebglProps } from './types';
 
 export class Webgl {
@@ -15,13 +18,17 @@ export class Webgl {
 
   private _callbacks: Callbacks<IWebglCallbacksMap>;
 
-  private _resizeHandler: IOnResize;
-
-  private _raf: Raf;
+  private _resizer: IOnResize;
 
   private _width: number;
 
   private _height: number;
+
+  private _stats: Stats;
+
+  private _clock: Clock;
+
+  private _orbits: OrbitControls;
 
   get props() {
     return this._props;
@@ -39,8 +46,16 @@ export class Webgl {
     return this._scene;
   }
 
-  get raf() {
-    return this._raf;
+  get renderer() {
+    return this._renderer;
+  }
+
+  get camera() {
+    return this._camera;
+  }
+
+  get time() {
+    return this._clock.elapsedTime;
   }
 
   constructor(
@@ -77,11 +92,22 @@ export class Webgl {
       canvas: this._canvas,
     });
 
+    // Stats
+    this._stats = new Stats();
+    _container.appendChild(this._stats.dom);
+
+    // Clock
+    this._clock = new Clock();
+
+    // Orbit controls
+    this._orbits = new OrbitControls(this._camera, this._canvas);
+    this._orbits.enableDamping = true;
+
     // Create scene
     this._scene = new Scene();
 
     // Create viewport callbacks
-    this._resizeHandler = onResize({
+    this._resizer = onResize({
       element: _container,
       callback: () => this.resize(),
     });
@@ -93,8 +119,7 @@ export class Webgl {
     this.resize();
 
     // Create an animation frame
-    this._raf = new Raf();
-    this._raf.on('frame', () => this.render());
+    this._renderer.setAnimationLoop(this.render.bind(this));
   }
 
   /** Resize the scene */
@@ -108,7 +133,7 @@ export class Webgl {
     this._camera.updateProjectionMatrix();
 
     this._renderer.setSize(this.width, this.height);
-    this._renderer.setPixelRatio(vevet.dpr);
+    this._renderer.setPixelRatio(Math.min(vevet.dpr, 2));
 
     this.callbacks.emit('resize', undefined);
 
@@ -146,23 +171,18 @@ export class Webgl {
     return this._props.perspective ?? 2000;
   }
 
-  /** Enable rendering */
-  public play() {
-    this._raf.play();
-  }
-
-  /** Disable rendering */
-  public pause() {
-    this._raf.pause();
-  }
-
   /** Render the scene */
   public render() {
     this.callbacks.emit('render', undefined);
 
+    this._clock.getElapsedTime();
+    this._orbits.update();
+
     if (this.width > 0 && this.height > 0) {
       this._renderer.render(this._scene, this._camera);
     }
+
+    this._stats.update();
   }
 
   /** Destroy the manager */
@@ -170,9 +190,9 @@ export class Webgl {
     this._canvas.remove();
 
     this._renderer.dispose();
+    this._stats.dom.remove();
 
-    this._raf.destroy();
     this._callbacks.destroy();
-    this._resizeHandler?.remove();
+    this._resizer?.remove();
   }
 }

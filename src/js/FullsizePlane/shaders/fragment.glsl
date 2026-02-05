@@ -26,7 +26,7 @@ float simplexNoiseFBM(vec3 x) {
 
 void main() {
   vec2 coords = getAspectCoords(vUv);
-  float time = u_time * 0.0075;
+  float time = u_time;
 
   vec3 randColor = vec3(sin(time), 0.3, cos(time));
 
